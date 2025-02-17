@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "457609880618",
+    "project_id": "nicare-d1283",
+    "storage_bucket": "nicare-d1283.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:457609880618:android:8126816fa428d869880f53",
+        "android_client_info": {
+          "package_name": "com.example.nicareassist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCY3vdfeb1jC7Zc4vzsuRnlGImvUebRovA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
