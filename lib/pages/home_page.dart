@@ -55,7 +55,7 @@ class HomePageState extends State<HomePage> {
 
   final List<Map<String, String>> quizModules = List.generate(
     20,
-        (index) => {
+    (index) => {
       'title': 'Module ${index + 1}',
       'description': 'Test your knowledge .',
     },
@@ -63,7 +63,7 @@ class HomePageState extends State<HomePage> {
 
   Future<void> _fetchUserScores() async {
     try {
-      var scoreUrl = global.url + "api/fetch-scores/?username="+TeamPageState.username;
+      var scoreUrl = global.url + "api/fetch-scores/?username=" + TeamPageState.username;
       final response = await http.get(Uri.parse(scoreUrl));
 
       if (response.statusCode == 200) {
@@ -72,11 +72,7 @@ class HomePageState extends State<HomePage> {
 
         setState(() {
           userScores = {
-            for (var item in scoreList)
-              item["module_number"]: {
-                "score": item["score"],
-                "is_completed": item["is_completed"]
-              }
+            for (var item in scoreList) item["module_number"]: {"score": item["score"], "is_completed": item["is_completed"]}
           };
         });
       } else {
@@ -88,7 +84,7 @@ class HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchLeadershipData() async {
-    String apiUrl = global.url+'api/leadership-bulletin/';
+    String apiUrl = global.url + 'api/leadership-bulletin/';
 
     try {
       final response = await http.get(Uri.parse(apiUrl));
@@ -111,7 +107,7 @@ class HomePageState extends State<HomePage> {
 
   Future<void> _fetchProfileImage() async {
     try {
-      final _profile_url = global.url+"api/fetch-img/" +"?"+"name="+TeamPageState.username;
+      final _profile_url = global.url + "api/fetch-img/" + "?" + "name=" + TeamPageState.username;
       final response = await http.get(Uri.parse(_profile_url));
       if (response.statusCode == 200) {
         setState(() {
@@ -131,7 +127,7 @@ class HomePageState extends State<HomePage> {
   }
 
   Future<void> fetchAppVersion() async {
-    String apiUrl = global.url+'api/fetch-version/';
+    String apiUrl = global.url + 'api/fetch-version/';
     try {
       final response = await http.get(Uri.parse(apiUrl));
       if (response.statusCode == 200) {
@@ -148,13 +144,13 @@ class HomePageState extends State<HomePage> {
         hasError = true;
       });
     }
-    if(global.version != latestVersion[0]['version_number']){
+    if (global.version != latestVersion[0]['version_number']) {
       final upToDateSnackbar = SnackBar(
         duration: Duration(seconds: 5),
         backgroundColor: Colors.transparent,
         elevation: 0,
         content: AwesomeSnackbarContent(
-          title: 'App Update Available No. '+latestVersion[0]['version_number'],
+          title: 'App Update Available No. ' + latestVersion[0]['version_number'],
           message: "Kindly update the app to use",
           contentType: ContentType.failure,
         ),
@@ -163,18 +159,18 @@ class HomePageState extends State<HomePage> {
       ScaffoldMessenger.of(context).showSnackBar(upToDateSnackbar);
       Mydrawer().logout(context);
     }
-
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
   }
+
   // List<Widget> myItems = ;
   int currentIndex = 0;
 
   // String baseURL = 'http://172.20.10.7:8080/alarmapi';
-  String baseURL = global.url+'api/alarmapi';
+  String baseURL = global.url + 'api/alarmapi';
   @override
   void initState() {
     super.initState();
@@ -200,140 +196,124 @@ class HomePageState extends State<HomePage> {
     }
   }
 
+  ScrollController homePageScrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
-    double screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    double screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
 
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xffF0F8FF),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: Image.asset(
-                'assets/logo_big.png',
-                // 'assets/testlogo.jpeg',
-                height: 30,
-              ),
-            ),
-          ],
-        ),
-
+    return Scaffold(
+      appBar: AppBar(
         backgroundColor: Color(0xffF0F8FF),
-        drawer: Mydrawer(),
-        body: isLoading
-            ? const Center(
-          child: CircularProgressIndicator(),  // Show CircularProgressIndicator while loading
-        )
-            : SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Padding(
-            padding: EdgeInsets.only(bottom: screenHeight * 0.1),
-            child: Center(
-              child: Column(
-                // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: Text(
-                      translation(context).bulletin,
-                      style: AppTextStyles.bold(
-                        fontSize: 16,
-                        color: Colors.black
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: screenHeight * 0.01,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: CarouselSlider(
-                      options: CarouselOptions(
-                        autoPlayCurve: Curves.fastOutSlowIn,
-                        autoPlayAnimationDuration: const Duration(milliseconds: 800),
-                        autoPlayInterval: const Duration(seconds: 6),
-                        aspectRatio: 0.5,
-                        enlargeCenterPage: true,
-                        clipBehavior: Clip.none,
-                        onPageChanged: (index, reason){
-                          setState(() {
-                            currentIndex = index;
-                          });
-                        },
-                        height: screenHeight*0.23,
-                        autoPlay: true
-                      ),
-                      items: sendTerms.map((term) {
-                        return LeaderBulletin(
-                          term['name'],
-                          term['designation'],
-                          term['message'],
-                          term['viva_url']
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  SizedBox(
-                    height: screenHeight * 0.01,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: Image.asset(
+              'assets/logo_big.png',
+              // 'assets/testlogo.jpeg',
+              height: 30,
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: Color(0xffF0F8FF),
+      drawer: Mydrawer(),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(), // Show CircularProgressIndicator while loading
+            )
+          : SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Padding(
+                padding: EdgeInsets.only(bottom: screenHeight * 0.1),
+                child: Center(
+                  child: Column(
+                    // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: Text(translation(context).homepagevideos,
-                          style: AppTextStyles.bold(
-                            fontSize: 16,
-                            color: Colors.black
-                          ),
+                        padding: const EdgeInsets.only(left: 20.0),
+                        child: Text(
+                          translation(context).bulletin,
+                          style: AppTextStyles.bold(fontSize: 16, color: Colors.black),
                         ),
                       ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: screenHeight * 0.02,
-                  ),
-                  Row(
-                    children: [
                       SizedBox(
-                        height: screenHeight * 0.23,
-                        width: screenWidth,
-                        child: ListView(
-                            padding: EdgeInsets.only(left: 20, right: 20),
-                            scrollDirection: Axis.horizontal,
-                            children: [
+                        height: screenHeight * 0.01,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: CarouselSlider(
+                          options: CarouselOptions(
+                              autoPlayCurve: Curves.fastOutSlowIn,
+                              autoPlayAnimationDuration: const Duration(milliseconds: 800),
+                              autoPlayInterval: const Duration(seconds: 6),
+                              aspectRatio: 0.5,
+                              enlargeCenterPage: true,
+                              clipBehavior: Clip.none,
+                              onPageChanged: (index, reason) {
+                                setState(() {
+                                  currentIndex = index;
+                                });
+                              },
+                              height: screenHeight * 0.23,
+                              autoPlay: true),
+                          items: sendTerms.map((term) {
+                            return LeaderBulletin(term['name'], term['designation'], term['message'], term['viva_url']);
+                          }).toList(),
+                        ),
+                      ),
+                      SizedBox(
+                        height: screenHeight * 0.01,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20),
+                            child: Text(
+                              translation(context).homepagevideos,
+                              style: AppTextStyles.bold(fontSize: 16, color: Colors.black),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: screenHeight * 0.02,
+                      ),
+                      Row(
+                        children: [
+                          SizedBox(
+                            height: screenHeight * 0.23,
+                            width: screenWidth,
+                            child: ListView(padding: EdgeInsets.only(left: 20, right: 20), scrollDirection: Axis.horizontal, children: [
                               Padding(
                                 padding: const EdgeInsets.only(right: 20),
                                 child: InkWell(
-                                  onTap: (){
+                                  onTap: () {
                                     PersistentNavBarNavigator.pushNewScreen(
                                       context,
-                                      screen: VideoPage(selectedTabIndex: 0,),
+                                      screen: VideoPage(
+                                        selectedTabIndex: 0,
+                                      ),
                                       withNavBar: false, // OPTIONAL VALUE. True by default.
                                       pageTransitionAnimation: PageTransitionAnimation.cupertino,
                                     );
                                   },
-                                  child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                          child: Image.asset('assets/poster3.jpeg', height: screenHeight*0.15)),
-                                      SizedBox(height: screenHeight*0.015,),
-                                      Text(translation(context).knowledge, style: AppTextStyles.bold(
-                                        fontSize: 14,
-                                        color: Colors.black
-                                      ),),
-
+                                          borderRadius: BorderRadius.circular(10),
+                                          child: Image.asset('assets/poster6.jpeg', height: screenHeight * 0.15)),
+                                      SizedBox(
+                                        height: screenHeight * 0.015,
+                                      ),
+                                      Text(
+                                        translation(context).preventive,
+                                        style: AppTextStyles.bold(fontSize: 14, color: Colors.black),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -341,25 +321,29 @@ class HomePageState extends State<HomePage> {
                               Padding(
                                 padding: const EdgeInsets.only(right: 20),
                                 child: InkWell(
-                                  onTap: (){
+                                  onTap: () {
                                     PersistentNavBarNavigator.pushNewScreen(
                                       context,
-                                      screen: VideoPage(selectedTabIndex: 1,),
+                                      screen: VideoPage(
+                                        selectedTabIndex: 1,
+                                      ),
                                       withNavBar: false, // OPTIONAL VALUE. True by default.
                                       pageTransitionAnimation: PageTransitionAnimation.cupertino,
                                     );
                                   },
-                                  child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       ClipRRect(
                                           borderRadius: BorderRadius.circular(10),
-                                          child: Image.asset('assets/poster4.jpeg', height: screenHeight*0.15)),
-                                      SizedBox(height: screenHeight*0.015,),
-                                      Text(translation(context).hardware, style: AppTextStyles.bold(
-                                          fontSize: 14,
-                                          color: Colors.black
-                                      ),),
-
+                                          child: Image.asset('assets/poster5.jpeg', height: screenHeight * 0.15)),
+                                      SizedBox(
+                                        height: screenHeight * 0.015,
+                                      ),
+                                      Text(
+                                        translation(context).hardware_repl,
+                                        style: AppTextStyles.bold(fontSize: 14, color: Colors.black),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -367,24 +351,29 @@ class HomePageState extends State<HomePage> {
                               Padding(
                                 padding: const EdgeInsets.only(right: 20),
                                 child: InkWell(
-                                  onTap: (){
+                                  onTap: () {
                                     PersistentNavBarNavigator.pushNewScreen(
                                       context,
-                                      screen: VideoPage(selectedTabIndex: 2,),
+                                      screen: VideoPage(
+                                        selectedTabIndex: 2,
+                                      ),
                                       withNavBar: false, // OPTIONAL VALUE. True by default.
                                       pageTransitionAnimation: PageTransitionAnimation.cupertino,
                                     );
                                   },
-                                  child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       ClipRRect(
                                           borderRadius: BorderRadius.circular(10),
-                                          child: Image.asset('assets/poster5.jpeg', height: screenHeight*0.15)),
-                                      SizedBox(height: screenHeight*0.015,),
-                                      Text(translation(context).hardware_repl, style: AppTextStyles.bold(
-                                          fontSize: 14,
-                                          color: Colors.black
-                                      ),),
+                                          child: Image.asset('assets/poster4.jpeg', height: screenHeight * 0.15)),
+                                      SizedBox(
+                                        height: screenHeight * 0.015,
+                                      ),
+                                      Text(
+                                        translation(context).hardware,
+                                        style: AppTextStyles.bold(fontSize: 14, color: Colors.black),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -392,25 +381,29 @@ class HomePageState extends State<HomePage> {
                               Padding(
                                 padding: const EdgeInsets.only(right: 20),
                                 child: InkWell(
-                                  onTap: (){
+                                  onTap: () {
                                     PersistentNavBarNavigator.pushNewScreen(
                                       context,
-                                      screen: VideoPage(selectedTabIndex: 3,),
+                                      screen: VideoPage(
+                                        selectedTabIndex: 3,
+                                      ),
                                       withNavBar: false, // OPTIONAL VALUE. True by default.
                                       pageTransitionAnimation: PageTransitionAnimation.cupertino,
                                     );
                                   },
-                                  child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       ClipRRect(
                                           borderRadius: BorderRadius.circular(10),
-                                          child: Image.asset('assets/poster6.jpeg', height: screenHeight*0.15)),
-                                      SizedBox(height: screenHeight*0.015,),
-                                      Text(translation(context).preventive, style: AppTextStyles.bold(
-                                          fontSize: 14,
-                                          color: Colors.black
-                                      ),),
-
+                                          child: Image.asset('assets/poster7.jpeg', height: screenHeight * 0.15)),
+                                      SizedBox(
+                                        height: screenHeight * 0.015,
+                                      ),
+                                      Text(
+                                        translation(context).trobleshooting,
+                                        style: AppTextStyles.bold(fontSize: 14, color: Colors.black),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -418,280 +411,272 @@ class HomePageState extends State<HomePage> {
                               Padding(
                                 padding: const EdgeInsets.only(right: 20),
                                 child: InkWell(
-                                  onTap: (){
+                                  onTap: () {
                                     PersistentNavBarNavigator.pushNewScreen(
                                       context,
-                                      screen: VideoPage(selectedTabIndex: 4,),
+                                      screen: VideoPage(
+                                        selectedTabIndex: 4,
+                                      ),
                                       withNavBar: false, // OPTIONAL VALUE. True by default.
                                       pageTransitionAnimation: PageTransitionAnimation.cupertino,
                                     );
                                   },
-                                  child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       ClipRRect(
                                           borderRadius: BorderRadius.circular(10),
-                                          child: Image.asset('assets/poster7.jpeg', height: screenHeight*0.15)),
-                                      SizedBox(height: screenHeight*0.015,),
-                                      Text(translation(context).trobleshooting, style: AppTextStyles.bold(
-                                          fontSize: 14,
-                                          color: Colors.black
-                                      ),),
-
+                                          child: Image.asset('assets/poster3.jpeg', height: screenHeight * 0.15)),
+                                      SizedBox(
+                                        height: screenHeight * 0.015,
+                                      ),
+                                      Text(
+                                        translation(context).knowledge,
+                                        style: AppTextStyles.bold(fontSize: 14, color: Colors.black),
+                                      ),
                                     ],
                                   ),
                                 ),
                               ),
                             ]),
-                      )
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20.0, top: 4),
-                        child: Text(
-                          translation(context).homepagealarms,
-                          style: AppTextStyles.bold(
-                            fontSize: 16,
-                            color: Colors.black,
-                          ),
-                        ),
+                          )
+                        ],
                       ),
-                      IconButton(
-                          onPressed: () {
-                            PersistentNavBarNavigator.pushNewScreen(
-                              context,
-                              screen: BotNavGuide(),
-                              withNavBar: false, // OPTIONAL VALUE. True by default.
-                              pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                            );
-                          },
-                          icon: Icon(Icons.arrow_circle_right_outlined)),
-                    ],
-                  ),
+                      Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20.0, top: 4),
+                            child: Text(
+                              translation(context).homepagealarms,
+                              style: AppTextStyles.bold(
+                                fontSize: 16,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                              onPressed: () {
+                                PersistentNavBarNavigator.pushNewScreen(
+                                  context,
+                                  screen: BotNavGuide(),
+                                  withNavBar: false, // OPTIONAL VALUE. True by default.
+                                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                                );
+                              },
+                              icon: Icon(Icons.arrow_circle_right_outlined)),
+                        ],
+                      ),
 
-                  FutureBuilder<List<AlarmModel>>(
-                    future: futureAlarms,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator(color: Colors.black));
-                      } else if (snapshot.hasError) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Error loading alarms.',
+                      FutureBuilder<List<AlarmModel>>(
+                        future: futureAlarms,
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator(color: Colors.black));
+                          } else if (snapshot.hasError) {
+                            return Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Error loading alarms.',
+                                    style: AppTextStyles.regular(
+                                      color: Colors.black,
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        futureAlarms = fetchAlarms();
+                                      });
+                                    },
+                                    child: const Text('Retry'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Center(
+                              child: Text(
+                                'No alarms found',
                                 style: AppTextStyles.regular(
                                   color: Colors.black,
                                   fontSize: 10,
                                 ),
                               ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    futureAlarms = fetchAlarms();
-                                  });
+                            );
+                          } else {
+                            final alarms = snapshot.data!;
+                            return SizedBox(
+                              height: screenHeight * 0.14,
+                              child: ListView.builder(
+                                scrollDirection: Axis.horizontal,
+                                itemCount: 5,
+                                itemBuilder: (context, index) {
+                                  final alarm = alarms[index];
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        PersistentNavBarNavigator.pushNewScreen(
+                                          context,
+                                          screen: PoaPage(
+                                            alarm.alarmName.toString(),
+                                            alarm.alarmSortDesc.toString(),
+                                            alarm.description.toString(),
+                                            alarm.alarmPoa.toString(),
+                                          ),
+                                          withNavBar: false,
+                                          pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                                        );
+                                      },
+                                      child: Container(
+                                        margin: EdgeInsets.symmetric(horizontal: 8.0),
+                                        width: screenWidth * 0.45,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(color: Colors.red),
+                                          color: Color(0xffF9F9F9),
+                                          borderRadius: BorderRadius.circular(12),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black87.withOpacity(0.1),
+                                              spreadRadius: 1,
+                                              blurRadius: 13,
+                                              offset: Offset(0, 3),
+                                            ),
+                                          ],
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                alarm.alarmName ?? "No Name",
+                                                style: AppTextStyles.bold(fontSize: 14, color: Colors.black),
+                                              ),
+                                              SizedBox(height: 8),
+                                              Text(
+                                                maxLines: 1,
+                                                alarm.alarmSortDesc ?? "No Description",
+                                                style: AppTextStyles.regular(fontSize: 10, color: Colors.black),
+                                              ),
+                                              SizedBox(height: 8),
+                                              // Text(
+                                              //   maxLines: 2,
+                                              //   "Description: ${alarm.description ?? "Not available"}",
+                                              //   style: AppTextStyles.regular(
+                                              //     fontSize: 12,
+                                              //   ),
+                                              // ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
                                 },
-                                child: const Text('Retry'),
                               ),
-                            ],
-                          ),
-                        );
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Center(
-                          child: Text(
-                            'No alarms found',
-                            style: AppTextStyles.regular(
-                              color: Colors.black,
-                              fontSize: 10,
+                            );
+                          }
+                        },
+                      ),
+                      SizedBox(height: screenHeight * 0.02),
+                      Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 20.0, top: 8),
+                            child: Text(
+                              translation(context).homepagequiz,
+                              style: AppTextStyles.bold(fontSize: 16, color: Colors.black),
                             ),
                           ),
-                        );
-                      } else {
-                        final alarms = snapshot.data!;
-                        return SizedBox(
-                          height: screenHeight * 0.14,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: 5,
-                            itemBuilder: (context, index) {
-                              final alarm = alarms[index];
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 12.0),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    PersistentNavBarNavigator.pushNewScreen(
-                                      context,
-                                      screen: PoaPage(
-                                        alarm.alarmName.toString(),
-                                        alarm.alarmSortDesc.toString(),
-                                        alarm.description.toString(),
-                                        alarm.alarmPoa.toString(),
-                                      ),
-                                      withNavBar: false,
-                                      pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                                    );
-                                  },
-                                  child: Container(
-                                    margin: EdgeInsets.symmetric(horizontal: 8.0),
-                                    width: screenWidth * 0.45,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(color: Colors.red),
-                                      color: Color(0xffF9F9F9),
-                                      borderRadius: BorderRadius.circular(12),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black87.withOpacity(0.1),
-                                          spreadRadius: 1,
-                                          blurRadius: 13,
-                                          offset: Offset(0, 3),
-                                        ),
-                                      ],
+                        ],
+                      ),
+                      SizedBox(height: screenHeight * 0.02),
+                      SizedBox(
+                        height: screenHeight * 0.1,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: quizModules.length,
+                          itemBuilder: (context, index) {
+                            final module = quizModules[index];
+                            bool isCompleted = userScores[index + 1]?["is_completed"] ?? false;
+                            return GestureDetector(
+                              onTap: () {
+                                PersistentNavBarNavigator.pushNewScreen(
+                                  context,
+                                  screen: ModulePage(),
+                                  withNavBar: false, // OPTIONAL VALUE. True by default.
+                                  pageTransitionAnimation: PageTransitionAnimation.cupertino,
+                                );
+                              },
+                              child: Container(
+                                margin: EdgeInsets.symmetric(horizontal: 10.0),
+                                width: screenWidth * 0.5,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: isCompleted ? Colors.green : Color(0xff9C27B0), // Green if completed
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.3),
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                      offset: Offset(0, 3),
                                     ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                  ],
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            alarm.alarmName ?? "No Name",
-                                            style: AppTextStyles.bold(
-                                              fontSize: 14,
-                                              color: Colors.black
-                                            ),
-                                          ),
-                                          SizedBox(height: 8),
-                                          Text(
+                                            module['title']!,
+                                            style: AppTextStyles.bold(fontSize: 14, color: Colors.black),
                                             maxLines: 1,
-                                            alarm.alarmSortDesc ?? "No Description",
-                                            style: AppTextStyles.regular(
-                                              fontSize: 10,
-                                              color: Colors.black
-                                            ),
+                                            overflow: TextOverflow.ellipsis,
                                           ),
-                                          SizedBox(height: 8),
-                                          // Text(
-                                          //   maxLines: 2,
-                                          //   "Description: ${alarm.description ?? "Not available"}",
-                                          //   style: AppTextStyles.regular(
-                                          //     fontSize: 12,
-                                          //   ),
-                                          // ),
+                                          Icon(
+                                            isCompleted ? Icons.check_circle : Icons.hourglass_empty, // ✅ or ⏳
+                                            color: isCompleted ? Colors.green : Colors.orange, // Green for completed, orange for pending
+                                            size: 18,
+                                          ),
                                         ],
                                       ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                  SizedBox(height: screenHeight * 0.02),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 20.0, top: 8),
-                        child: Text(
-                          translation(context).homepagequiz,
-                          style: AppTextStyles.bold(
-                            fontSize: 16,
-                           color: Colors.black
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: screenHeight * 0.02),
-                  SizedBox(
-                    height: screenHeight * 0.1,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      itemCount: quizModules.length,
-                      itemBuilder: (context, index) {
-                        final module = quizModules[index];
-                        bool isCompleted = userScores[index + 1]?["is_completed"] ?? false;
-                        return GestureDetector(
-                          onTap: () {
-                            PersistentNavBarNavigator.pushNewScreen(
-                              context,
-                              screen: ModulePage(),
-                              withNavBar: false, // OPTIONAL VALUE. True by default.
-                              pageTransitionAnimation: PageTransitionAnimation.cupertino,
-                            );
-                          },
-                          child: Container(
-                            margin: EdgeInsets.symmetric(horizontal: 10.0),
-                            width: screenWidth * 0.5,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: isCompleted ? Colors.green : Color(0xff9C27B0), // Green if completed
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.3),
-                                  spreadRadius: 2,
-                                  blurRadius: 5,
-                                  offset: Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
+                                      SizedBox(height: 8),
                                       Text(
-                                        module['title']!,
-                                        style: AppTextStyles.bold(
-                                          fontSize: 14,
-                                          color: Colors.black
+                                        isCompleted
+                                            ? translation(context).complete // Show "Completed" if done
+                                            : translation(context).incomplete, // Show "Incomplete" otherwise
+                                        style: AppTextStyles.regular(
+                                          fontSize: 12,
+                                          color: isCompleted ? Colors.green : Colors.orange,
                                         ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      Icon(
-                                        isCompleted ? Icons.check_circle : Icons.hourglass_empty, // ✅ or ⏳
-                                        color: isCompleted ? Colors.green : Colors.orange, // Green for completed, orange for pending
-                                        size: 18,
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    isCompleted
-                                        ? translation(context).complete // Show "Completed" if done
-                                        : translation(context).incomplete, // Show "Incomplete" otherwise
-                                    style: AppTextStyles.regular(
-                                      fontSize: 12,
-                                      color: isCompleted ? Colors.green : Colors.orange,
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                            );
+                          },
+                        ),
+                      ),
+                      SizedBox(height: screenHeight * 0.02),
+                      // TestimonialCarousel(),
+                    ],
                   ),
-                  SizedBox(height: screenHeight * 0.02),
-                  // TestimonialCarousel(),
-                ],
+                ),
               ),
             ),
-          ),
-        ),
-      );
-    }
+    );
+  }
 }

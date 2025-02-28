@@ -1,23 +1,27 @@
 class VideoModel {
-  int? id;
+  late final int? videoId;
   String? title;
   String? category;
   String? url;
   String? createdAt;
+  String? language;
+  int? like;
   int? alarm;
   String? thumbnail;
 
   VideoModel(
-      {this.id,
+      {this.videoId,
         this.title,
         this.category,
         this.url,
         this.createdAt,
+        this.language,
+        this.like,
         this.alarm,
       this.thumbnail});
 
   VideoModel.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    videoId = json['id'];
     title = json['title'];
     category = json['category'];
     url = json['url'];
@@ -28,7 +32,7 @@ class VideoModel {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
+    data['id'] = this.videoId;
     data['title'] = this.title;
     data['category'] = this.category;
     data['url'] = this.url;

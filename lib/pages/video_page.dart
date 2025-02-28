@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -34,6 +35,8 @@ class _VideoPageState extends State<VideoPage> with SingleTickerProviderStateMix
   List<String> searchTerms = []; // Stores video titles for searching
   List<String> searchLinks = []; // Stores video URLs for searching
   List<String> thumbnails = [];
+  List<int> videoIds = [];
+
 
   bool isLoading = true;
   String baseURL = global.url+'api/videoapi';
@@ -68,6 +71,8 @@ class _VideoPageState extends State<VideoPage> with SingleTickerProviderStateMix
           searchTerms = videos.map((video) => video.title ?? '').toList();
           searchLinks = videos.map((video) => video.url ?? '').toList();
           thumbnails = videos.map((video) => video.thumbnail ?? '').toList();
+          videoIds = videos.map((video) => video.videoId ?? 0).toList();
+          print(videoIds);
           isLoading = false;
         });
       } else {
@@ -85,15 +90,15 @@ class _VideoPageState extends State<VideoPage> with SingleTickerProviderStateMix
   List<VideoModel> _getFilteredVideos(int tabIndex) {
     switch (tabIndex) {
       case 0:
-        return videos.where((video) => video.category == 'Knowledge Base Videos').toList();
-      case 1:
-        return videos.where((video) => video.category == 'Hardware Information Videos').toList();
-      case 2:
-        return videos.where((video) => video.category == 'Hardware Replacement Videos').toList();
-      case 3:
         return videos.where((video) => video.category == 'Preventive Maintenance').toList();
-      case 4:
+      case 1:
+        return videos.where((video) => video.category == 'Hardware Replacement Videos').toList();
+      case 2:
+        return videos.where((video) => video.category == 'Hardware Information Videos').toList();
+      case 3:
         return videos.where((video) => video.category == 'Troubleshooting Guidance').toList();
+      case 4:
+        return videos.where((video) => video.category == 'Knowledge Base Videos').toList();
       default:
         return [];
     }
@@ -125,11 +130,11 @@ class _VideoPageState extends State<VideoPage> with SingleTickerProviderStateMix
             labelColor: Colors.black,
             isScrollable: true,
             tabs: [
-              Tab(text: translation(context)!.knowledge),
-              Tab(text: translation(context)!.hardware),
-              Tab(text: translation(context)!.hardware_repl),
               Tab(text: translation(context)!.preventive),
+              Tab(text: translation(context)!.hardware_repl),
+              Tab(text: translation(context)!.hardware),
               Tab(text: translation(context)!.trobleshooting),
+              Tab(text: translation(context)!.knowledge),
             ],
           ),
           actions: [
@@ -163,9 +168,10 @@ class _VideoPageState extends State<VideoPage> with SingleTickerProviderStateMix
   Widget buildVideoGrid(int tabIndex) {
     List<VideoModel> filteredVideos = _getFilteredVideos(tabIndex);
 
-    return filteredVideos.isEmpty
-        ? const Center(child: Text('No videos available'))
-        : GridView.builder(
+    if (filteredVideos.isEmpty) {
+      return const Center(child: Text('No videos available'));
+    } else {
+      return GridView.builder(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       itemCount: filteredVideos.length,
@@ -179,8 +185,10 @@ class _VideoPageState extends State<VideoPage> with SingleTickerProviderStateMix
         titles: filteredVideos.map((video) => video.title ?? '').toList(),
         searchLinks: filteredVideos.map((video) => video.url ?? '').toList(),
         thumbnails: filteredVideos.map((video) => video.thumbnail ?? '').toList(),
+        videoIds: filteredVideos.map((video) => video.videoId ?? 0).toList(),
       ), // Pass the filtered videos to VideoCard
     );
+    }
   }
 }
 

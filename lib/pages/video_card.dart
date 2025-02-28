@@ -7,6 +7,7 @@ import 'package:shimmer/shimmer.dart';
 
 class ModernVideoCard extends StatelessWidget {
   final int index;
+  final List<int> videoIds;
   final List<String> titles;
   final List<String> searchLinks;
   final List<String> thumbnails;
@@ -16,6 +17,7 @@ class ModernVideoCard extends StatelessWidget {
     Key? key,
     required this.index,
     required this.titles,
+    required this.videoIds,
     required this.searchLinks,
     required this.thumbnails,
     this.customWidth,
@@ -35,9 +37,11 @@ class ModernVideoCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: GestureDetector(
         onTap: () {
+          print(videoIds[index]);
+          print(titles[index]);
           PersistentNavBarNavigator.pushNewScreen(
             context,
-            screen: VideoScreen(searchLinks[index]),
+            screen: VideoScreen(searchLinks[index], videoIds[index], titles[index]),
             withNavBar: false,
             pageTransitionAnimation: PageTransitionAnimation.cupertino,
           );
@@ -83,7 +87,7 @@ class ModernVideoCard extends StatelessWidget {
                         width: cardWidth,
                         height: cardHeight,
                         color: Colors.grey[300],
-                        child: const Icon(Icons.error),
+                        child: Center(child: Text('No Thumbnail Found', style: TextStyle(color: Colors.black54, fontSize: 12),)),
                       ),
                     ),
                     // Play button overlay
